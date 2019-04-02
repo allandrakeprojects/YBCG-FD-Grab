@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main_Form));
             this.panel_header = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox_header = new System.Windows.Forms.PictureBox();
@@ -51,8 +52,7 @@
             this.timer_pending = new System.Windows.Forms.Timer(this.components);
             this.timer_detect_running = new System.Windows.Forms.Timer(this.components);
             this.timer_flush_memory = new System.Windows.Forms.Timer(this.components);
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.timer_size = new System.Windows.Forms.Timer(this.components);
             this.panel_header.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_header)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_minimize)).BeginInit();
@@ -65,8 +65,6 @@
             // panel_header
             // 
             this.panel_header.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(90)))), ((int)(((byte)(101)))));
-            this.panel_header.Controls.Add(this.textBox1);
-            this.panel_header.Controls.Add(this.button1);
             this.panel_header.Controls.Add(this.label1);
             this.panel_header.Controls.Add(this.pictureBox_header);
             this.panel_header.Controls.Add(this.panel1);
@@ -102,7 +100,7 @@
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(34)))), ((int)(((byte)(36)))));
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(101)))), ((int)(((byte)(6)))));
             this.panel1.Location = new System.Drawing.Point(0, -5);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(158, 10);
@@ -116,11 +114,11 @@
             // 
             this.label_title.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_title.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.label_title.Location = new System.Drawing.Point(38, 0);
+            this.label_title.Location = new System.Drawing.Point(52, 0);
             this.label_title.Name = "label_title";
-            this.label_title.Size = new System.Drawing.Size(123, 45);
+            this.label_title.Size = new System.Drawing.Size(235, 45);
             this.label_title.TabIndex = 2;
-            this.label_title.Text = "FD Grab";
+            this.label_title.Text = "FD Grab [Card Game]";
             this.label_title.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.label_title.MouseDown += new System.Windows.Forms.MouseEventHandler(this.label_title_MouseDown);
             // 
@@ -154,12 +152,12 @@
             // 
             this.label_brand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label_brand.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_brand.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(34)))), ((int)(((byte)(36)))));
+            this.label_brand.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(101)))), ((int)(((byte)(6)))));
             this.label_brand.Location = new System.Drawing.Point(0, 228);
             this.label_brand.Name = "label_brand";
             this.label_brand.Size = new System.Drawing.Size(468, 23);
             this.label_brand.TabIndex = 4;
-            this.label_brand.Text = "Yong Bao Card Game";
+            this.label_brand.Text = "Yong Bao";
             this.label_brand.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.label_brand.Visible = false;
             this.label_brand.MouseDown += new System.Windows.Forms.MouseEventHandler(this.label_brand_MouseDown);
@@ -167,7 +165,7 @@
             // panel2
             // 
             this.panel2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(34)))), ((int)(((byte)(36)))));
+            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(101)))), ((int)(((byte)(6)))));
             this.panel2.Location = new System.Drawing.Point(309, 462);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(158, 10);
@@ -213,7 +211,7 @@
             // 
             // pictureBox_landing
             // 
-            this.pictureBox_landing.Image = global::YBCG_FD_Grab.Properties.Resources.landing;
+            this.pictureBox_landing.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox_landing.Image")));
             this.pictureBox_landing.Location = new System.Drawing.Point(183, 169);
             this.pictureBox_landing.Name = "pictureBox_landing";
             this.pictureBox_landing.Size = new System.Drawing.Size(111, 113);
@@ -286,22 +284,9 @@
             this.timer_flush_memory.Interval = 60000;
             this.timer_flush_memory.Tick += new System.EventHandler(this.timer_flush_memory_Tick);
             // 
-            // button1
+            // timer_size
             // 
-            this.button1.Location = new System.Drawing.Point(270, -5);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_ClickAsync);
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(354, -5);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 13;
+            this.timer_size.Tick += new System.EventHandler(this.timer_size_Tick);
             // 
             // Main_Form
             // 
@@ -320,6 +305,7 @@
             this.Controls.Add(this.panel_header);
             this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(466, 468);
             this.MinimumSize = new System.Drawing.Size(466, 168);
             this.Name = "Main_Form";
@@ -363,7 +349,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Timer timer_detect_running;
         private System.Windows.Forms.Timer timer_flush_memory;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Timer timer_size;
     }
 }

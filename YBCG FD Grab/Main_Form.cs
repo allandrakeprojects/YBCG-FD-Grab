@@ -11,7 +11,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -41,7 +40,8 @@ namespace YBCG_FD_Grab
         private string __last_username = "";
         private string __last_username_pending = "";
         private string __url = "";
-        private string __auth = "eyJhbGciOiJIUzI1NiJ9.ewogICJpYXQiIDogMTU1MzczNjk4NiwKICAiZXhwIiA6IDE1NTM3NDc3ODYsCiAgInVzZXJuYW1lIiA6ICJ5YnJhaW4iLAogICJlbWFpbCIgOiBudWxsLAogICJyb2xlIiA6ICIiLAogICJleHRyYSIgOiAie30iLAogICJpc29wIiA6IHRydWUKfQ.v5ndNbBiyJpTTxrsuRNUvcj3SGlcN-4Sue5oWtEJ36g";
+        private string __auth = "eyJhbGciOiJIUzI1NiJ9.ewogICJpYXQiIDogMTU1NDEwNDg2NiwKICAiZXhwIiA6IDE1NTQxMTU2NjYsCiAgInVzZXJuYW1lIiA6ICJ5YnJhaW4iLAogICJlbWFpbCIgOiBudWxsLAogICJyb2xlIiA6ICIiLAogICJleHRyYSIgOiAie30iLAogICJpc29wIiA6IHRydWUKfQ.mnt17KxCICuCt82qUbxC4_RG0mFA35iyEfxWUSzW64c";
+        List<string> __deposit_payment_type = new List<string>();
         Form __mainFormHandler;
 
         // Drag Header to Move
@@ -303,82 +303,100 @@ namespace YBCG_FD_Grab
             __url = e.Address.ToString();
             if (e.Address.ToString().Equals("https://bo.yongbao66.com/login"))
             {
-                if (__isLogin)
-                {
-                    Invoke(new Action(() =>
-                    {
-                        label_brand.Visible = false;
-                        pictureBox_loader.Visible = false;
-                        label_player_last_bill_no.Visible = false;
-                        label_page_count.Visible = false;
-                        label_currentrecord.Visible = false;
-                        __mainFormHandler = Application.OpenForms[0];
-                        __mainFormHandler.Size = new Size(466, 468);
-
-                        SendITSupport("The application have been logout, please re-login again.");
-                        SendMyBot("The application have been logout, please re-login again.");
-                        __send = 0;
-                        timer_pending.Stop();
-                    }));
-                }
-
-                __isLogin = false;
-                timer.Stop();
-
-                Invoke(new Action(() =>
-                {
-                    chromeBrowser.FrameLoadEnd += (sender_, args) =>
-                    {
-                        if (args.Frame.IsMain)
-                        {
-                            Invoke(new Action(() =>
-                            {
-                                if (!__isLogin)
-                                {
-                                    args.Frame.ExecuteJavaScriptAsync("document.getElementById('userid').value = 'ybrain';");
-                                    args.Frame.ExecuteJavaScriptAsync("document.getElementById('password').value = 'rain1234';");
-                                    args.Frame.ExecuteJavaScriptAsync("document.querySelector('.nrc-button').click();");
-                                    
-                                    __isLogin = false;
-                                    panel_cefsharp.Visible = true;
-                                    label_player_last_bill_no.Text = "-";
-                                    label_brand.Visible = false;
-                                    pictureBox_loader.Visible = false;
-                                    label_player_last_bill_no.Visible = false;
-                                }
-                            }));
-                        }
-                    };
-                }));
-            }
-
-            if (e.Address.ToString().Equals("https://bo.yongbao66.com/"))
-            {
-                chromeBrowser.Load("https://bo.yongbao66.com/deposit");
-                
                 Invoke(new Action(async () =>
                 {
+                    __isLogin = true;
+                    timer_pending.Start();
+                    __isLogin = true;
+                    panel_cefsharp.Visible = false;
                     label_brand.Visible = true;
                     pictureBox_loader.Visible = true;
                     label_player_last_bill_no.Visible = true;
-                    label_page_count.Visible = true;
-                    label_currentrecord.Visible = true;
-                    //__mainFormHandler = Application.OpenForms[0];
-                    //__mainFormHandler.Size = new Size(466, 168);
-
-                    if (!__isLogin)
-                    {
-                        timer_pending.Start();
-                        __isLogin = true;
-                        //panel_cefsharp.Visible = false;
-                        label_brand.Visible = true;
-                        pictureBox_loader.Visible = true;
-                        label_player_last_bill_no.Visible = true;
-                        //await ___PlayerLastBillNoAsync();
-                        await ___GetPlayerListsRequest();
-                    }
+                    await ___LoginAuthAsync();
+                    await ___PlayerLastBillNoAsync();
+                    await ___GetDepositPaymentTypeAsync();
+                    await ___GetPlayerListsRequest();
                 }));
+
+                //if (__isLogin)
+                //{
+                //    Invoke(new Action(() =>
+                //    {
+                //        label_brand.Visible = false;
+                //        pictureBox_loader.Visible = false;
+                //        label_player_last_bill_no.Visible = false;
+                //        label_page_count.Visible = false;
+                //        label_currentrecord.Visible = false;
+                //        __mainFormHandler = Application.OpenForms[0];
+                //        __mainFormHandler.Size = new Size(466, 468);
+
+                //        SendITSupport("The application have been logout, please re-login again.");
+                //        SendMyBot("The application have been logout, please re-login again.");
+                //        __send = 0;
+                //        timer_pending.Stop();
+                //    }));
+                //}
+
+                //__isLogin = false;
+                //timer.Stop();
+
+                //Invoke(new Action(() =>
+                //{
+                //    chromeBrowser.FrameLoadEnd += (sender_, args) =>
+                //    {
+                //        if (args.Frame.IsMain)
+                //        {
+                //            Invoke(new Action(() =>
+                //            {
+                //                if (!__isLogin)
+                //                {
+                //                    args.Frame.ExecuteJavaScriptAsync("document.getElementById('userid').value = 'ybrain';");
+                //                    args.Frame.ExecuteJavaScriptAsync("document.getElementById('password').value = 'rain1234';");
+                //                    //args.Frame.ExecuteJavaScriptAsync("document.querySelector('.nrc-button').click();");
+
+                //                    __isLogin = false;
+                //                    panel_cefsharp.Visible = true;
+                //                    label_player_last_bill_no.Text = "-";
+                //                    label_brand.Visible = false;
+                //                    pictureBox_loader.Visible = false;
+                //                    label_player_last_bill_no.Visible = false;
+                //                }
+                //            }));
+                //        }
+                //    };
+                //}));
             }
+
+            //if (e.Address.ToString().Equals("https://bo.yongbao66.com/"))
+            //{
+            //    chromeBrowser.Load("https://bo.yongbao66.com/deposit");
+
+            //    Invoke(new Action(async () =>
+            //    {
+            //        label_brand.Visible = true;
+            //        pictureBox_loader.Visible = true;
+            //        label_player_last_bill_no.Visible = true;
+            //        label_page_count.Visible = true;
+            //        label_currentrecord.Visible = true;
+            //        __mainFormHandler = Application.OpenForms[0];
+            //        __mainFormHandler.Size = new Size(466, 168);
+
+            //        if (!__isLogin)
+            //        {
+            //            timer_pending.Start();
+            //            __isLogin = true;
+            //            panel_cefsharp.Visible = false;
+            //            label_brand.Visible = true;
+            //            pictureBox_loader.Visible = true;
+            //            label_player_last_bill_no.Visible = true;
+            //            await ___LoginAuthAsync();
+            //            MessageBox.Show(__auth);
+            //            await ___PlayerLastBillNoAsync();
+            //            await ___GetDepositPaymentTypeAsync();
+            //            await ___GetPlayerListsRequest();
+            //        }
+            //    }));
+            //}
 
             if (!__isLogin && __url.Contains("maintenance"))
             {
@@ -426,6 +444,7 @@ namespace YBCG_FD_Grab
         private void timer_landing_Tick(object sender, EventArgs e)
         {
             panel_landing.Visible = false;
+            timer_size.Start();
             timer_landing.Stop();
         }
 
@@ -445,6 +464,9 @@ namespace YBCG_FD_Grab
                     await ___GetLastBillNoAsync();
                 }
 
+                label_player_last_bill_no.Text = "Last Bill No.: " + Properties.Settings.Default.______last_bill_no;
+                Properties.Settings.Default.______last_bill_no = "9bbead01-5d41-4e5a-876d-2ff6e9b5ca2a";
+                Properties.Settings.Default.Save();
                 label_player_last_bill_no.Text = "Last Bill No.: " + Properties.Settings.Default.______last_bill_no;
             }
             catch (Exception err)
@@ -536,7 +558,7 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    var result = await wb.UploadValuesTaskAsync("http://zeus.ssitex.com:8080/API/lastFDRecord", "POST", data);
+                    var result = await wb.UploadValuesTaskAsync("http://192.168.10.252:8080/zeus2/API/lastFDRecord", "POST", data);
                     string responsebody = Encoding.UTF8.GetString(result);
                     var deserializeObject = JsonConvert.DeserializeObject(responsebody);
                     JObject jo = JObject.Parse(deserializeObject.ToString());
@@ -579,20 +601,13 @@ namespace YBCG_FD_Grab
         {
             try
             {
-                string start_time_replace = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd 00:00:00");
+                string start_time_replace = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd 00:00:00");
                 DateTime start_time = DateTime.ParseExact(start_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                 int start_time_epoch = (int)(start_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
 
                 string end_time_replace = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
                 DateTime end_time = DateTime.ParseExact(end_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                 int end_time_epoch = (int)(end_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
-
-                //HttpClient client = new HttpClient();
-                //client.UseDefaultCredentials = false;
-                //HttpResponseMessage response = await client.GetAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/search?endtime=" + end_time_epoch + "&language=1&limit=25&offset=0&sort=DESC&sortcolumn=deposittime&starttime=" + start_time_epoch + "&statusall=true&timefilter=deposittime");
-                //response.EnsureSuccessStatusCode();
-                //string responseBody = await response.Content.ReadAsStringAsync();
-                //MessageBox.Show(responseBody);
 
                 WebClient wc = new WebClient(); string value = wc.Headers["Authorization"];
                 wc.Encoding = Encoding.UTF8;
@@ -603,9 +618,8 @@ namespace YBCG_FD_Grab
                 wc.Headers[HttpRequestHeader.Authorization] = __auth;
                 wc.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
                 wc.Headers.Add("Content-Type", "application/json");
-                byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/search?endtime=" + end_time_epoch + "999&language=1&limit=25&offset=0&sort=DESC&sortcolumn=deposittime&starttime=" + start_time_epoch + "000&statusall=true");
+                byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/search?endtime=" + end_time_epoch + "999&language=1&limit=100000&offset=0&sort=DESC&sortcolumn=deposittime&starttime=" + start_time_epoch + "000&statusall=true");
                 string responsebody = Encoding.UTF8.GetString(result);
-                textBox1.Text = responsebody;
                 var deserializeObject = JsonConvert.DeserializeObject(responsebody);
                 __jo = JObject.Parse(deserializeObject.ToString());
                 JToken count = __jo.SelectToken("$.data");
@@ -646,8 +660,71 @@ namespace YBCG_FD_Grab
                 if (bill_no.ToString().Trim() != Properties.Settings.Default.______last_bill_no)
                 {
                     JToken status = __jo.SelectToken("$.data[" + i + "].status").ToString();
-                    MessageBox.Show(status.ToString());
                     if (status.ToString() != "1")
+                    {
+                        if (i == 0)
+                        {
+                            __player_last_bill_no = bill_no.ToString().Trim();
+                        }
+                        
+                        JToken username = __jo.SelectToken("$.data[" + i + "].playerid").ToString();
+                        string _playerlist_cn = await ___PlayerListContactNumberAsync(username.ToString());
+                        JToken name = __jo.SelectToken("$.data[" + i + "].firstname").ToString();
+                        JToken date_deposit = __jo.SelectToken("$.data[" + i + "].audittime").ToString();
+                        DateTime date_deposit_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble("1553642608803") / 1000d)).ToLocalTime();
+                        if (!String.IsNullOrEmpty(date_deposit.ToString()))
+                        {
+                            date_deposit_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(date_deposit.ToString()) / 1000d)).ToLocalTime();
+                            date_deposit = date_deposit_replace.ToString("yyyy-MM-dd HH:mm:ss");
+                        }
+                        else
+                        {
+                            date_deposit = "";
+                        }
+                        JToken process_datetime = __jo.SelectToken("$.data[" + i + "].deposittime").ToString();
+                        DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(1553642608803) / 1000d)).ToLocalTime();
+                        process_datetime = process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss");
+                        JToken vip = __jo.SelectToken("$.data[" + i + "].groupname").ToString();
+                        JToken method = __jo.SelectToken("$.data[" + i + "].depositpaymenttype").ToString();
+                        for (int ii = 0; ii < __deposit_payment_type.Count; ii++)
+                        {
+                            string[] _deposit_payment_type_replace = __deposit_payment_type[ii].Replace("_", " ").Split('|');
+                            if (_deposit_payment_type_replace[1] == method.ToString())
+                            {
+                                method = _deposit_payment_type_replace[0];
+                            }
+                        }
+                        if (method.ToString() == "")
+                        {
+                            SendMyBot("New Deposit Payment Type Detected.");
+
+                            await ___GetDepositPaymentTypeAsync();
+                            
+                            for (int ii = 0; ii < __deposit_payment_type.Count; ii++)
+                            {
+                                string[] _deposit_payment_type_replace = __deposit_payment_type[ii].Replace("_", " ").Split('|');
+                                if (_deposit_payment_type_replace[1] == method.ToString())
+                                {
+                                    method = _deposit_payment_type_replace[0];
+                                }
+                            }
+                        }
+                        JToken gateway = __jo.SelectToken("$.data[" + i + "].thirdpartypaymentstaticname").ToString();
+                        JToken amount = __jo.SelectToken("$.data[" + i + "].receiveddepositamt").ToString().Replace(",", "");
+                        JToken pg_bill_no = __jo.SelectToken("$.data[" + i + "].remarks").ToString();
+                        if (status.ToString() == "3")
+                        {
+                            status = "1";
+                        }
+                        else
+                        {
+                            amount = "0";
+                            status = "0";
+                        }
+
+                        player_info.Add(username + "*|*" + name + "*|*" + process_datetime + "*|*" + vip + "*|*" + amount + "*|*" + gateway + "*|*" + status + "*|*" + bill_no + "*|*" + _playerlist_cn + "*|*" + date_deposit + "*|*" + method + "*|*" + pg_bill_no);
+                    }
+                    else
                     {
                         if (i == 0)
                         {
@@ -668,81 +745,76 @@ namespace YBCG_FD_Grab
                         {
                             date_deposit = "";
                         }
-                        
                         JToken process_datetime = __jo.SelectToken("$.data[" + i + "].deposittime").ToString();
                         DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(1553642608803) / 1000d)).ToLocalTime();
                         process_datetime = process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss");
-                        
-                        //JToken vip = __jo.SelectToken("$.data[" + i + "].groupname").ToString();
-                        //JToken gateway = __jo.SelectToken("$.data[" + i + "].toBankName").ToString();
-                        //JToken method = __jo.SelectToken("$.data[" + i + "].thirdpartypaymentstaticname").ToString();
-                        //JToken amount = __jo.SelectToken("$.data[" + i + "].receiveddepositamt").ToString().Replace(",", "");
-                        //JToken pg_bill_no = __jo.SelectToken("$.data[" + i + "].referenceNo").ToString();
-                        //if (status.ToString() == "3")
-                        //{
-                        //    status = "1";
-                        //}
-                        //else
-                        //{
-                        //    status = "0";
-                        //}
+                        JToken vip = __jo.SelectToken("$.data[" + i + "].groupname").ToString();
+                        JToken method = __jo.SelectToken("$.data[" + i + "].depositpaymenttype").ToString();
+                        for (int ii = 0; ii < __deposit_payment_type.Count; ii++)
+                        {
+                            string[] _deposit_payment_type_replace = __deposit_payment_type[ii].Replace("_", " ").Split('|');
+                            if (_deposit_payment_type_replace[1] == method.ToString())
+                            {
+                                method = _deposit_payment_type_replace[0];
+                            }
+                        }
+                        if (method.ToString() == "")
+                        {
+                            SendMyBot("New Deposit Payment Type Detected.");
 
-                        //player_info.Add(username + "*|*" + name + "*|*" + date_deposit_replace.ToString("yyyy-MM-dd HH:mm:ss") + "*|*" + vip + "*|*" + amount + "*|*" + gateway + "*|*" + status + "*|*" + bill_no + "*|*" + _playerlist_cn + "*|*" + process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss") + "*|*" + method + "*|*" + pg_bill_no);
-                    }
-                    else
-                    {
-                        //if (i == 0)
-                        //{
-                        //    __player_last_bill_no = bill_no.ToString().Trim();
-                        //}
+                            await ___GetDepositPaymentTypeAsync();
 
-                        //JToken username = __jo.SelectToken("$.data[" + i + "].userId").ToString();
-                        //string _playerlist_cn = await ___PlayerListContactNumberAsync(username.ToString());
-                        //JToken name = __jo.SelectToken("$.data[" + i + "].userName").ToString();
-                        //JToken date_deposit = __jo.SelectToken("$.data[" + i + "].createTime").ToString();
-                        //DateTime date_deposit_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(date_deposit.ToString()) / 1000d)).ToLocalTime();
-                        //JToken process_datetime = __jo.SelectToken("$.data[" + i + "].approvedTime").ToString();
-                        ////DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(process_datetime.ToString()) / 1000d)).ToLocalTime();
-                        //JToken vip = __jo.SelectToken("$.data[" + i + "].vipLevel").ToString();
-                        //JToken gateway = __jo.SelectToken("$.data[" + i + "].toBankName").ToString();
-                        //JToken method = __jo.SelectToken("$.data[" + i + "].toPaymentType").ToString();
-                        //JToken amount = __jo.SelectToken("$.data[" + i + "].amount").ToString().Replace(",", "");
-                        //JToken pg_bill_no = __jo.SelectToken("$.data[" + i + "].referenceNo").ToString();
-                        //status = "2";
+                            for (int ii = 0; ii < __deposit_payment_type.Count; ii++)
+                            {
+                                string[] _deposit_payment_type_replace = __deposit_payment_type[ii].Replace("_", " ").Split('|');
+                                if (_deposit_payment_type_replace[1] == method.ToString())
+                                {
+                                    method = _deposit_payment_type_replace[0];
+                                }
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show(method.ToString());
+                        }
+                        JToken gateway = __jo.SelectToken("$.data[" + i + "].thirdpartypaymentstaticname").ToString();
+                        string amount = "0";
+                        JToken pg_bill_no = __jo.SelectToken("$.data[" + i + "].remarks").ToString();
+                        status = "2";
 
-                        //player_info.Add(username + "*|*" + name + "*|*" + date_deposit_replace.ToString("yyyy-MM-dd HH:mm:ss") + "*|*" + vip + "*|*" + amount + "*|*" + gateway + "*|*" + status + "*|*" + bill_no + "*|*" + _playerlist_cn + "*|*" + "" + "*|*" + method + "*|*" + pg_bill_no);
+                        player_info.Add(username + "*|*" + name + "*|*" + process_datetime + "*|*" + vip + "*|*" + amount + "*|*" + gateway + "*|*" + status + "*|*" + bill_no + "*|*" + _playerlist_cn + "*|*" + date_deposit + "*|*" + method + "*|*" + pg_bill_no);
 
-                        //bool isContains = false;
-                        //char[] split = "*|*".ToCharArray();
-                        //string[] values = Properties.Settings.Default.______pending_bill_no.Split(split);
-                        //foreach (var value in values)
-                        //{
-                        //    if (value != "")
-                        //    {
-                        //        if (bill_no.ToString() == value)
-                        //        {
-                        //            isContains = true;
-                        //            break;
-                        //        }
-                        //        else
-                        //        {
-                        //            isContains = false;
-                        //        }
-                        //    }
-                        //}
+                        bool isContains = false;
+                        char[] split = "*|*".ToCharArray();
+                        string[] values = Properties.Settings.Default.______pending_bill_no.Split(split);
+                        foreach (var value in values)
+                        {
+                            if (value != "")
+                            {
+                                if (bill_no.ToString() == value)
+                                {
+                                    isContains = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    isContains = false;
+                                }
+                            }
+                        }
 
-                        //if (!isContains)
-                        //{
-                        //    Properties.Settings.Default.______pending_bill_no += bill_no + "*|*";
-                        //    label1.Text = Properties.Settings.Default.______pending_bill_no;
-                        //    Properties.Settings.Default.Save();
-                        //}
-                        //else if (Properties.Settings.Default.______pending_bill_no == "")
-                        //{
-                        //    Properties.Settings.Default.______pending_bill_no += bill_no + "*|*";
-                        //    label1.Text = Properties.Settings.Default.______pending_bill_no;
-                        //    Properties.Settings.Default.Save();
-                        //}
+                        if (!isContains)
+                        {
+                            Properties.Settings.Default.______pending_bill_no += bill_no + "*|*";
+                            label1.Text = Properties.Settings.Default.______pending_bill_no;
+                            Properties.Settings.Default.Save();
+                        }
+                        else if (Properties.Settings.Default.______pending_bill_no == "")
+                        {
+                            Properties.Settings.Default.______pending_bill_no += bill_no + "*|*";
+                            label1.Text = Properties.Settings.Default.______pending_bill_no;
+                            Properties.Settings.Default.Save();
+                        }
                     }
                 }
                 else
@@ -839,7 +911,7 @@ namespace YBCG_FD_Grab
                             }
 
                             // ----- Insert Data
-                            using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\fdgrab_yb.txt", true, Encoding.UTF8))
+                            using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\fdgrab_ybcg.txt", true, Encoding.UTF8))
                             {
                                 file.WriteLine(_username + "*|*" + _name + "*|*" + _contact_no + "*|*" + _date_deposit + "*|*" + _vip + "*|*" + _amount + "*|*" + _gateway + "*|*" + _status + "*|*" + _bill_no + "*|*" + _process_datetime + "*|*" + _method + "*|*" + _pg_bill_no);
                                 file.Close();
@@ -898,95 +970,100 @@ namespace YBCG_FD_Grab
         {
             try
             {
-                string start_time = "2016-01-01 00:00:00";
-                string end_time = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd 00:00:00");
+                string start_time_replace = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd 00:00:00");
+                DateTime start_time = DateTime.ParseExact(start_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                int start_time_epoch = (int)(start_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
 
-                start_time = start_time.Replace("-", "%2F");
-                start_time = start_time.Replace(" ", "+");
-                start_time = start_time.Replace(":", "%3A");
+                string end_time_replace = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
+                DateTime end_time = DateTime.ParseExact(end_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                int end_time_epoch = (int)(end_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
 
-                end_time = end_time.Replace("-", "%2F");
-                end_time = end_time.Replace(" ", "+");
-                end_time = end_time.Replace(":", "%3A");
-
-                var cookieManager = Cef.GetGlobalCookieManager();
-                var visitor = new CookieCollector();
-                cookieManager.VisitUrlCookies(__url, true, visitor);
-                var cookies = await visitor.Task;
-                var cookie = CookieCollector.GetCookieHeader(cookies);
-                WebClient wc = new WebClient();
-                wc.Headers.Add("Cookie", cookie);
+                WebClient wc = new WebClient(); string value = wc.Headers["Authorization"];
                 wc.Encoding = Encoding.UTF8;
-                wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                wc.UseDefaultCredentials = false;
+                wc.Headers.Add("Accept-Language", "en-US,en;q=0.9");
+                wc.Headers.Add("Referer", "https://bo.yongbao66.com/deposit");
+                wc.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36");
+                wc.Headers[HttpRequestHeader.Authorization] = __auth;
+                wc.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+                wc.Headers.Add("Content-Type", "application/json");
 
-                byte[] result = await wc.DownloadDataTaskAsync("http://103.4.104.8/manager/payment/searchDeposit?transactionId=" + bill_no + "&referenceNo=&userId=&status=9999&type=2&toBankIdOrBranch=-1&createDateStart=" + start_time + "&createDateEnd=" + end_time + "&vipLevel=-1&approvedDateStart=&approvedDateEnd=&pageNumber=1&pageSize=10&sortCondition=4&sortName=createTime&sortOrder=1&searchText=");
+                byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/search?depositid=" + bill_no + "&endtime=" + end_time + "&language=1&limit=100000&offset=0&sort=DESC&sortcolumn=deposittime&starttime=" + start_time + "&statusall=true&timefilter=deposittime");
                 string responsebody = Encoding.UTF8.GetString(result);
                 var deserializeObject = JsonConvert.DeserializeObject(responsebody);
                 JToken jo = JObject.Parse(deserializeObject.ToString());
-                JToken status = jo.SelectToken("$.aaData[0].status");
+                JToken status = jo.SelectToken("$.data[0].status");
 
-                string path = Path.GetTempPath() + @"\fdgrab_yb_pending.txt";
-                if (status.ToString() == "2")
+                string path = Path.GetTempPath() + @"\fdgrab_ybcg_pending.txt";
+                if (status.ToString() != "1")
                 {
                     Properties.Settings.Default.______pending_bill_no = Properties.Settings.Default.______pending_bill_no.Replace(bill_no + "*|*", "");
                     label1.Text = Properties.Settings.Default.______pending_bill_no;
                     Properties.Settings.Default.Save();
+                    
+                    JToken username = __jo.SelectToken("$.data[0].playerid").ToString();
+                    string _playerlist_cn = await ___PlayerListContactNumberAsync(username.ToString());
+                    JToken name = __jo.SelectToken("$.data[0].firstname").ToString();
+                    JToken date_deposit = __jo.SelectToken("$.data[0].audittime").ToString();
+                    DateTime date_deposit_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble("1553642608803") / 1000d)).ToLocalTime();
+                    if (!String.IsNullOrEmpty(date_deposit.ToString()))
+                    {
+                        date_deposit_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(date_deposit.ToString()) / 1000d)).ToLocalTime();
+                        date_deposit = date_deposit_replace.ToString("yyyy-MM-dd HH:mm:ss");
+                    }
+                    else
+                    {
+                        date_deposit = "";
+                    }
+                    JToken process_datetime = __jo.SelectToken("$.data[0].deposittime").ToString();
+                    DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(1553642608803) / 1000d)).ToLocalTime();
+                    process_datetime = process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss");
+                    JToken vip = __jo.SelectToken("$.data[0].groupname").ToString();
+                    JToken method = __jo.SelectToken("$.data[0].depositpaymenttype").ToString();
+                    for (int ii = 0; ii < __deposit_payment_type.Count; ii++)
+                    {
+                        string[] _deposit_payment_type_replace = __deposit_payment_type[ii].Replace("_", " ").Split('|');
+                        if (_deposit_payment_type_replace[1] == method.ToString())
+                        {
+                            method = _deposit_payment_type_replace[0];
+                        }
+                    }
+                    if (method.ToString() == "")
+                    {
+                        SendMyBot("New Deposit Payment Type Detected.");
 
-                    status = "1";
-                    JToken username = jo.SelectToken("$.aaData[0].userId").ToString();
-                    string _playerlist_cn_pending = await ___PlayerListContactNumberAsync(username.ToString());
-                    JToken name = jo.SelectToken("$.aaData[0].userName").ToString();
-                    JToken date_deposit = jo.SelectToken("$.aaData[0].createTime").ToString();
-                    DateTime date_deposit_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(date_deposit.ToString()) / 1000d)).ToLocalTime();
-                    JToken process_datetime = jo.SelectToken("$.aaData[0].approvedTime").ToString();
-                    DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(process_datetime.ToString()) / 1000d)).ToLocalTime();
-                    JToken vip = jo.SelectToken("$.aaData[0].vipLevel").ToString();
-                    JToken gateway = jo.SelectToken("$.aaData[0].toBankName").ToString();
-                    JToken method = jo.SelectToken("$.aaData[0].toPaymentType").ToString();
-                    JToken amount = jo.SelectToken("$.aaData[0].amount").ToString().Replace(",", "");
-                    JToken pg_bill_no = jo.SelectToken("$.aaData[0].referenceNo").ToString();
+                        await ___GetDepositPaymentTypeAsync();
+
+                        for (int ii = 0; ii < __deposit_payment_type.Count; ii++)
+                        {
+                            string[] _deposit_payment_type_replace = __deposit_payment_type[ii].Replace("_", " ").Split('|');
+                            if (_deposit_payment_type_replace[1] == method.ToString())
+                            {
+                                method = _deposit_payment_type_replace[0];
+                            }
+                        }
+                    }
+                    JToken gateway = __jo.SelectToken("$.data[0].thirdpartypaymentstaticname").ToString();
+                    JToken amount = __jo.SelectToken("$.data[0].receiveddepositamt").ToString().Replace(",", "");
+                    JToken pg_bill_no = __jo.SelectToken("$.data[0].remarks").ToString();
+                    if (status.ToString() == "3")
+                    {
+                        status = "1";
+                    }
+                    else
+                    {
+                        amount = "0";
+                        status = "0";
+                    }            
 
                     if (__last_username_pending == username.ToString())
                     {
                         Thread.Sleep(Properties.Settings.Default.______thread_mill);
-                        ___InsertData(username.ToString(), name.ToString(), date_deposit_replace.ToString("yyyy-MM-dd HH:mm:ss"), vip.ToString(), amount.ToString(), gateway.ToString(), status.ToString(), bill_no, _playerlist_cn_pending, process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss"), method.ToString(), pg_bill_no.ToString());
+                        ___InsertData(username.ToString(), name.ToString(), process_datetime.ToString(), vip.ToString(), amount.ToString(), gateway.ToString(), status.ToString(), bill_no, _playerlist_cn_pending, date_deposit.ToString(), method.ToString(), pg_bill_no.ToString());
                     }
                     else
                     {
-                        ___InsertData(username.ToString(), name.ToString(), date_deposit_replace.ToString("yyyy-MM-dd HH:mm:ss"), vip.ToString(), amount.ToString(), gateway.ToString(), status.ToString(), bill_no, _playerlist_cn_pending, process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss"), method.ToString(), pg_bill_no.ToString());
-                    }
-                    __last_username_pending = username.ToString();
-
-                    __send = 0;
-                }
-                else if (status.ToString() == "-2")
-                {
-                    Properties.Settings.Default.______pending_bill_no = Properties.Settings.Default.______pending_bill_no.Replace(bill_no + "*|*", "");
-                    label1.Text = Properties.Settings.Default.______pending_bill_no;
-                    Properties.Settings.Default.Save();
-
-                    status = "0";
-                    JToken username = jo.SelectToken("$.aaData[0].userId").ToString();
-                    string _playerlist_cn_pending = await ___PlayerListContactNumberAsync(username.ToString());
-                    JToken name = jo.SelectToken("$.aaData[0].userName").ToString();
-                    JToken date_deposit = jo.SelectToken("$.aaData[0].createTime").ToString();
-                    DateTime date_deposit_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(date_deposit.ToString()) / 1000d)).ToLocalTime();
-                    JToken process_datetime = jo.SelectToken("$.aaData[0].approvedTime").ToString();
-                    DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(process_datetime.ToString()) / 1000d)).ToLocalTime();
-                    JToken vip = jo.SelectToken("$.aaData[0].vipLevel").ToString();
-                    JToken gateway = jo.SelectToken("$.aaData[0].toBankName").ToString();
-                    JToken method = jo.SelectToken("$.aaData[0].toPaymentType").ToString();
-                    JToken amount = jo.SelectToken("$.aaData[0].amount").ToString().Replace(",", "");
-                    JToken pg_bill_no = jo.SelectToken("$.aaData[0].referenceNo").ToString();
-
-                    if (__last_username_pending == username.ToString())
-                    {
-                        Thread.Sleep(Properties.Settings.Default.______thread_mill);
-                        ___InsertData(username.ToString(), name.ToString(), date_deposit_replace.ToString("yyyy-MM-dd HH:mm:ss"), vip.ToString(), amount.ToString(), gateway.ToString(), status.ToString(), bill_no, _playerlist_cn_pending, process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss"), method.ToString(), pg_bill_no.ToString());
-                    }
-                    else
-                    {
-                        ___InsertData(username.ToString(), name.ToString(), date_deposit_replace.ToString("yyyy-MM-dd HH:mm:ss"), vip.ToString(), amount.ToString(), gateway.ToString(), status.ToString(), bill_no, _playerlist_cn_pending, process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss"), method.ToString(), pg_bill_no.ToString());
+                        ___InsertData(username.ToString(), name.ToString(), process_datetime.ToString(), vip.ToString(), amount.ToString(), gateway.ToString(), status.ToString(), bill_no, _playerlist_cn_pending, date_deposit.ToString(), method.ToString(), pg_bill_no.ToString());
                     }
                     __last_username_pending = username.ToString();
 
@@ -1046,8 +1123,8 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    //var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/sendFD", "POST", data);
-                    //string responseInString = Encoding.UTF8.GetString(response);
+                    var response = wb.UploadValues("http://192.168.10.252:8080/zeus2/API/sendFD", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
             catch (Exception err)
@@ -1104,8 +1181,8 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    //var response = wb.UploadValues("http://zeus2.ssitex.com:8080/API/sendFD", "POST", data);
-                    //string responseInString = Encoding.UTF8.GetString(response);
+                    var response = wb.UploadValues("http://192.168.10.252:8080/zeus2/API/sendFD", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
             catch (Exception err)
@@ -1134,7 +1211,6 @@ namespace YBCG_FD_Grab
         {
             try
             {
-
                 WebClient wc = new WebClient(); string value = wc.Headers["Authorization"];
                 wc.Encoding = Encoding.UTF8;
                 wc.UseDefaultCredentials = false;
@@ -1149,7 +1225,21 @@ namespace YBCG_FD_Grab
                 var deserializeObject = JsonConvert.DeserializeObject(responsebody);
                 JObject jo_deposit = JObject.Parse(deserializeObject.ToString());
                 JToken _phone_number = jo_deposit.SelectToken("$.mobile").ToString().Trim().Replace(" ", "");
-                return _phone_number.ToString();
+                if (!String.IsNullOrEmpty(_phone_number.ToString()))
+                {
+                    if (_phone_number.ToString().Substring(0, 2) == "86")
+                    {
+                        return _phone_number.ToString().Substring(2);
+                    }
+                    else
+                    {
+                        return _phone_number.ToString();
+                    }
+                }
+                else
+                {
+                    return _phone_number.ToString();
+                }
             }
             catch (Exception err)
             {
@@ -1366,7 +1456,7 @@ namespace YBCG_FD_Grab
 
         private void timer_detect_running_Tick(object sender, EventArgs e)
         {
-            //___DetectRunning();
+            ___DetectRunning();
         }
 
         private void ___DetectRunning()
@@ -1391,8 +1481,8 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    //var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/updateAppStatus", "POST", data);
-                    //string responseInString = Encoding.UTF8.GetString(response);
+                    var response = wb.UploadValues("http://192.168.10.252:8080/zeus2/API/updateAppStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
             catch (Exception err)
@@ -1439,8 +1529,8 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    //var response = wb.UploadValues("http://zeus2.ssitex.com:8080/API/updateAppStatus", "POST", data);
-                    //string responseInString = Encoding.UTF8.GetString(response);
+                    var response = wb.UploadValues("http://192.168.10.252:8080/zeus2/API/updateAppStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
             catch (Exception err)
@@ -1489,18 +1579,121 @@ namespace YBCG_FD_Grab
             }
         }
 
-        private async void button1_ClickAsync(object sender, EventArgs e)
+        private async Task ___GetDepositPaymentTypeAsync()
         {
-            string start_time_replace = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd 00:00:00");
-            DateTime start_time = DateTime.ParseExact(start_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-            int start_time_epoch = (int)(start_time - new DateTime(1970, 1, 1)).TotalSeconds;
-            
-            string end_time_replace = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
-            DateTime end_time = DateTime.ParseExact(end_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-            int end_time_epoch = (int)(end_time - new DateTime(1970, 1, 1)).TotalSeconds;
-            textBox1.Text = start_time_epoch.ToString() + " --- " + end_time_epoch;
+            try
+            {
+                WebClient wc = new WebClient(); string value = wc.Headers["Authorization"];
+                wc.Encoding = Encoding.UTF8;
+                wc.UseDefaultCredentials = false;
+                wc.Headers.Add("Accept-Language", "en-US,en;q=0.9");
+                wc.Headers.Add("Referer", "https://bo.yongbao66.com/deposit");
+                wc.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36");
+                wc.Headers[HttpRequestHeader.Authorization] = __auth;
+                wc.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+                wc.Headers.Add("Content-Type", "application/json");
+                byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/options");
+                string responsebody = Encoding.UTF8.GetString(result);
+                var deserializeObject = JsonConvert.DeserializeObject(responsebody);
+                JObject _jo = JObject.Parse(deserializeObject.ToString());
+                JToken count = _jo.SelectToken("$.depositpaymenttype");
 
-            await ___GetPlayerListsRequest();
+                __deposit_payment_type.Clear();
+
+                for (int i = 0; i < count.Count(); i++)
+                {
+                    JToken _id = _jo.SelectToken("$.depositpaymenttype[" + i + "].id").ToString();
+                    if (_id.ToString().ToLower() != "all")
+                    {
+                        JToken _value = _jo.SelectToken("$.depositpaymenttype[" + i + "].value").ToString();
+                        __deposit_payment_type.Add(_id + "|" + _value);
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                if (__isLogin)
+                {
+                    __send++;
+                    if (__send == 5)
+                    {
+                        SendITSupport("There's a problem to the server, please re-open the application.");
+                        SendMyBot(err.ToString());
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___WaitNSeconds(10);
+                        await ___GetDepositPaymentTypeAsync();
+                    }
+                }
+            }
+        }
+
+        private void asdasdasd()
+        {
+            //WebClient wc = new WebClient(); string value = wc.Headers["Authorization"];
+            //wc.Encoding = Encoding.UTF8;
+            //wc.UseDefaultCredentials = false;
+            //wc.Headers.Add("Accept-Language", "en-US,en;q=0.9");
+            //wc.Headers.Add("Referer", "https://bo.yongbao66.com/deposit");
+            //wc.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36");
+            //wc.Headers[HttpRequestHeader.Authorization] = __auth;
+            //wc.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+            //wc.Headers.Add("Content-Type", "application/json");
+            //byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/options");
+            //string responsebody = Encoding.UTF8.GetString(result);
+            //var deserializeObject = JsonConvert.DeserializeObject(responsebody);
+            //JObject _jo = JObject.Parse(deserializeObject.ToString());
+            //JToken count = _jo.SelectToken("$.depositpaymenttype");
+
+        }
+
+        public void LoginToDatrose()
+        {
+            //var loginUriBuilder = new UriBuilder();
+            //loginUriBuilder.Host = "https://bo.yongbao66.com/";
+            //loginUriBuilder.Scheme = "https";
+
+            //var postData = new NameValueCollection();
+            //postData.Add("LoginName", "ybrain");
+            //postData.Add("Password", "rain1234");
+
+            //var responseCookies = new NameValueCollection();
+
+            //using (var client = new Cookies_Webclient())
+            //{
+            //    client.IgnoreRedirects = true;
+            //    var clientResponse = client.DownloadData("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/options");
+            //    foreach (var nvp in client.InboundCookies.OfType<System.Net.Cookie>())
+            //    {
+            //        MessageBox.Show(nvp.Name, nvp.Value);
+            //    }
+            //}
+        }
+
+        private async Task ___LoginAuthAsync()
+        {
+            WebClient wc = new WebClient();
+            wc.Headers[HttpRequestHeader.ContentType] = "application/json";
+            wc.Headers["X-Requested-With"] = "XMLHttpRequest";
+            var data = new NameValueCollection
+            {
+                ["userid"] = "ybrain",
+                ["password"] = "29f2a78c34a61d8205c12183197f0d64f9a05671"
+            };
+            string result = await wc.UploadStringTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/login", "{\"userid\":\"ybrain\",\"password\":\"29f2a78c34a61d8205c12183197f0d64f9a05671\"}");
+            var deserializeObject = JsonConvert.DeserializeObject(result);
+            JObject _jo = JObject.Parse(deserializeObject.ToString());
+            __auth = _jo.SelectToken("$.token").ToString();
+        }
+
+        private void timer_size_Tick(object sender, EventArgs e)
+        {
+            __mainFormHandler = Application.OpenForms[0];
+            __mainFormHandler.Size = new Size(466, 168);
         }
     }
 }

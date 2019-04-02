@@ -76,6 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cookie.cs" />
+    <Compile Include="Cookies_Webclient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Main_Form.cs">
       <SubType>Form</SubType>
     </Compile>
