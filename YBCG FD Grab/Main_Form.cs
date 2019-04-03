@@ -465,9 +465,6 @@ namespace YBCG_FD_Grab
                 }
 
                 label_player_last_bill_no.Text = "Last Bill No.: " + Properties.Settings.Default.______last_bill_no;
-                Properties.Settings.Default.______last_bill_no = "9bbead01-5d41-4e5a-876d-2ff6e9b5ca2a";
-                Properties.Settings.Default.Save();
-                label_player_last_bill_no.Text = "Last Bill No.: " + Properties.Settings.Default.______last_bill_no;
             }
             catch (Exception err)
             {
@@ -507,12 +504,12 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    byte[] result = await wb.UploadValuesTaskAsync("http://192.168.10.252:8080/API/lastFDRecord", "POST", data);
+                    byte[] result = await wb.UploadValuesTaskAsync("http://192.168.10.252:8080/zeus2/API/lastFDRecord", "POST", data);
                     string responsebody = Encoding.UTF8.GetString(result);
                     var deserializeObject = JsonConvert.DeserializeObject(responsebody);
                     JObject jo = JObject.Parse(deserializeObject.ToString());
                     JToken lbn = jo.SelectToken("$.msg");
-
+                    
                     Properties.Settings.Default.______last_bill_no = lbn.ToString();
                     Properties.Settings.Default.Save();
                 }
