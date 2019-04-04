@@ -114,12 +114,12 @@
             // 
             this.label_title.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_title.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.label_title.Location = new System.Drawing.Point(52, 0);
+            this.label_title.Location = new System.Drawing.Point(53, 0);
             this.label_title.Name = "label_title";
             this.label_title.Size = new System.Drawing.Size(235, 45);
             this.label_title.TabIndex = 2;
-            this.label_title.Text = "FD Grab [Card Game]";
-            this.label_title.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label_title.Text = "FD Grab [CG]";
+            this.label_title.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label_title.MouseDown += new System.Windows.Forms.MouseEventHandler(this.label_title_MouseDown);
             // 
             // pictureBox_minimize

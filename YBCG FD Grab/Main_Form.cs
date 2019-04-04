@@ -40,7 +40,7 @@ namespace YBCG_FD_Grab
         private string __last_username = "";
         private string __last_username_pending = "";
         private string __url = "";
-        private string __auth = "eyJhbGciOiJIUzI1NiJ9.ewogICJpYXQiIDogMTU1NDEwNDg2NiwKICAiZXhwIiA6IDE1NTQxMTU2NjYsCiAgInVzZXJuYW1lIiA6ICJ5YnJhaW4iLAogICJlbWFpbCIgOiBudWxsLAogICJyb2xlIiA6ICIiLAogICJleHRyYSIgOiAie30iLAogICJpc29wIiA6IHRydWUKfQ.mnt17KxCICuCt82qUbxC4_RG0mFA35iyEfxWUSzW64c";
+        private string __auth = "";
         List<string> __deposit_payment_type = new List<string>();
         Form __mainFormHandler;
 
@@ -404,16 +404,14 @@ namespace YBCG_FD_Grab
                 {
                     Properties.Settings.Default.______is_send = true;
                     Properties.Settings.Default.Save();
-                    MessageBox.Show("ghghg1");
-                    //SendITSupport("BO Under Maintenance.");
+                    SendITSupport("BO Under Maintenance.");
                 }
             }
             else
             {
                 if (Properties.Settings.Default.______is_send)
                 {
-                    MessageBox.Show("ghghg2");
-                    //SendITSupport("BO Back to Normal.");
+                    SendITSupport("BO Back to Normal.");
                 }
 
                 Properties.Settings.Default.______is_send = false;
@@ -431,7 +429,7 @@ namespace YBCG_FD_Grab
 
         void ___CloseMessageBox()
         {
-            IntPtr windowPtr = FindWindowByCaption(IntPtr.Zero, "JavaScript Alert - http://103.4.104.8");
+            IntPtr windowPtr = FindWindowByCaption(IntPtr.Zero, "JavaScript Alert - https://bo.yongbao66.com");
 
             if (windowPtr == IntPtr.Zero)
             {
@@ -504,7 +502,7 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    byte[] result = await wb.UploadValuesTaskAsync("http://192.168.10.252:8080/zeus2/API/lastFDRecord", "POST", data);
+                    byte[] result = await wb.UploadValuesTaskAsync("http://192.168.10.252:8080/API/lastFDRecord", "POST", data);
                     string responsebody = Encoding.UTF8.GetString(result);
                     var deserializeObject = JsonConvert.DeserializeObject(responsebody);
                     JObject jo = JObject.Parse(deserializeObject.ToString());
@@ -555,7 +553,7 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    var result = await wb.UploadValuesTaskAsync("http://192.168.10.252:8080/zeus2/API/lastFDRecord", "POST", data);
+                    var result = await wb.UploadValuesTaskAsync("http://zeus.ssitex.com:8080/API/lastFDRecord", "POST", data);
                     string responsebody = Encoding.UTF8.GetString(result);
                     var deserializeObject = JsonConvert.DeserializeObject(responsebody);
                     JObject jo = JObject.Parse(deserializeObject.ToString());
@@ -626,7 +624,6 @@ namespace YBCG_FD_Grab
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.ToString());
                 if (__isLogin)
                 {
                     __send++;
@@ -770,10 +767,6 @@ namespace YBCG_FD_Grab
                                 }
                             }
                         }
-                        else
-                        {
-                            MessageBox.Show(method.ToString());
-                        }
                         JToken gateway = __jo.SelectToken("$.data[" + i + "].thirdpartypaymentstaticname").ToString();
                         string amount = "0";
                         JToken pg_bill_no = __jo.SelectToken("$.data[" + i + "].remarks").ToString();
@@ -913,16 +906,21 @@ namespace YBCG_FD_Grab
                                 file.WriteLine(_username + "*|*" + _name + "*|*" + _contact_no + "*|*" + _date_deposit + "*|*" + _vip + "*|*" + _amount + "*|*" + _gateway + "*|*" + _status + "*|*" + _bill_no + "*|*" + _process_datetime + "*|*" + _method + "*|*" + _pg_bill_no);
                                 file.Close();
                             }
-                            if (__last_username == _username)
+
+                            Thread t = new Thread(delegate ()
                             {
-                                Thread.Sleep(Properties.Settings.Default.______thread_mill);
-                                ___InsertData(_username, _name, _date_deposit, _vip, _amount, _gateway, _status, _bill_no, _contact_no, _process_datetime, _method, _pg_bill_no);
-                            }
-                            else
-                            {
-                                ___InsertData(_username, _name, _date_deposit, _vip, _amount, _gateway, _status, _bill_no, _contact_no, _process_datetime, _method, _pg_bill_no);
-                            }
-                            __last_username = _username;
+                                if (__last_username == _username)
+                                {
+                                    Thread.Sleep(Properties.Settings.Default.______thread_mill);
+                                    ___InsertData(_username, _name, _date_deposit, _vip, _amount, _gateway, _status, _bill_no, _contact_no, _process_datetime, _method, _pg_bill_no);
+                                }
+                                else
+                                {
+                                    ___InsertData(_username, _name, _date_deposit, _vip, _amount, _gateway, _status, _bill_no, _contact_no, _process_datetime, _method, _pg_bill_no);
+                                }
+                                __last_username = _username;
+                            });
+                            t.Start();
 
                             __send = 0;
                         }
@@ -1051,18 +1049,22 @@ namespace YBCG_FD_Grab
                     {
                         amount = "0";
                         status = "0";
-                    }            
-
-                    if (__last_username_pending == username.ToString())
-                    {
-                        Thread.Sleep(Properties.Settings.Default.______thread_mill);
-                        ___InsertData(username.ToString(), name.ToString(), process_datetime.ToString(), vip.ToString(), amount.ToString(), gateway.ToString(), status.ToString(), bill_no, _playerlist_cn_pending, date_deposit.ToString(), method.ToString(), pg_bill_no.ToString());
                     }
-                    else
+                    
+                    Thread t = new Thread(delegate ()
                     {
-                        ___InsertData(username.ToString(), name.ToString(), process_datetime.ToString(), vip.ToString(), amount.ToString(), gateway.ToString(), status.ToString(), bill_no, _playerlist_cn_pending, date_deposit.ToString(), method.ToString(), pg_bill_no.ToString());
-                    }
-                    __last_username_pending = username.ToString();
+                        if (__last_username_pending == username.ToString())
+                        {
+                            Thread.Sleep(Properties.Settings.Default.______thread_mill);
+                            ___InsertData(username.ToString(), name.ToString(), process_datetime.ToString(), vip.ToString(), amount.ToString(), gateway.ToString(), status.ToString(), bill_no, _playerlist_cn_pending, date_deposit.ToString(), method.ToString(), pg_bill_no.ToString());
+                        }
+                        else
+                        {
+                            ___InsertData(username.ToString(), name.ToString(), process_datetime.ToString(), vip.ToString(), amount.ToString(), gateway.ToString(), status.ToString(), bill_no, _playerlist_cn_pending, date_deposit.ToString(), method.ToString(), pg_bill_no.ToString());
+                        }
+                        __last_username_pending = username.ToString();
+                    });
+                    t.Start();
 
                     __send = 0;
                 }
@@ -1120,7 +1122,7 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://192.168.10.252:8080/zeus2/API/sendFD", "POST", data);
+                    var response = wb.UploadValues("http://192.168.10.252:8080/API/sendFD", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
@@ -1178,7 +1180,7 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://192.168.10.252:8080/zeus2/API/sendFD", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/sendFD", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
@@ -1453,7 +1455,7 @@ namespace YBCG_FD_Grab
 
         private void timer_detect_running_Tick(object sender, EventArgs e)
         {
-            ___DetectRunning();
+            //___DetectRunning();
         }
 
         private void ___DetectRunning()
@@ -1478,7 +1480,7 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://192.168.10.252:8080/zeus2/API/updateAppStatus", "POST", data);
+                    var response = wb.UploadValues("http://192.168.10.252:8080/API/updateAppStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
@@ -1526,7 +1528,7 @@ namespace YBCG_FD_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://192.168.10.252:8080/zeus2/API/updateAppStatus", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/updateAppStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
