@@ -465,6 +465,7 @@ namespace YBCG_FD_Grab
 
         private async Task ___PlayerLastBillNoAsync()
         {
+            // 04/22/19
             Properties.Settings.Default.______last_bill_no = "";
 
             try
@@ -666,7 +667,7 @@ namespace YBCG_FD_Grab
                 if (bill_no.ToString().Trim() != Properties.Settings.Default.______last_bill_no)
                 {
                     JToken status = __jo.SelectToken("$.data[" + i + "].status").ToString();
-                    if (status.ToString() != "1")
+                    if (status.ToString() != "1" || status.ToString() != "2")
                     {
                         if (i == 0)
                         {
@@ -688,7 +689,7 @@ namespace YBCG_FD_Grab
                             date_deposit = "";
                         }
                         JToken process_datetime = __jo.SelectToken("$.data[" + i + "].deposittime").ToString();
-                        DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(1553642608803) / 1000d)).ToLocalTime();
+                        DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(process_datetime) / 1000d)).ToLocalTime();
                         process_datetime = process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss");
                         JToken vip = __jo.SelectToken("$.data[" + i + "].groupname").ToString();
                         JToken method = __jo.SelectToken("$.data[" + i + "].depositpaymenttype").ToString();
@@ -752,7 +753,7 @@ namespace YBCG_FD_Grab
                             date_deposit = "";
                         }
                         JToken process_datetime = __jo.SelectToken("$.data[" + i + "].deposittime").ToString();
-                        DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(1553642608803) / 1000d)).ToLocalTime();
+                        DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(process_datetime) / 1000d)).ToLocalTime();
                         process_datetime = process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss");
                         JToken vip = __jo.SelectToken("$.data[" + i + "].groupname").ToString();
                         JToken method = __jo.SelectToken("$.data[" + i + "].depositpaymenttype").ToString();
@@ -918,6 +919,9 @@ namespace YBCG_FD_Grab
                                 file.WriteLine(_username + "*|*" + _name + "*|*" + _contact_no + "*|*" + _date_deposit + "*|*" + _vip + "*|*" + _amount + "*|*" + _gateway + "*|*" + _status + "*|*" + _bill_no + "*|*" + _process_datetime + "*|*" + _method + "*|*" + _pg_bill_no);
                                 file.Close();
                             }
+                            
+                            // 04/22/19
+                            SendMyBot(_username + " --- " + _name + " --- " + _date_deposit + " --- " + _vip + " --- " + _amount + " --- " + _gateway + " --- " + _status + " --- " + _bill_no + " --- " + _contact_no + " --- " + _process_datetime + " --- " + _method + " --- " + _pg_bill_no);
 
                             if (__last_username == _username)
                             {
@@ -994,20 +998,20 @@ namespace YBCG_FD_Grab
                 byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/search?depositid=" + bill_no + "&endtime=" + __end_time + "&language=1&limit=100000&offset=0&sort=DESC&sortcolumn=deposittime&starttime=" + __start_time + "&statusall=true&timefilter=deposittime");
                 string responsebody = Encoding.UTF8.GetString(result);
                 var deserializeObject = JsonConvert.DeserializeObject(responsebody);
-                JToken jo = JObject.Parse(deserializeObject.ToString());
-                JToken status = jo.SelectToken("$.data[0].status");
+                JToken _jo = JObject.Parse(deserializeObject.ToString());
+                JToken status = _jo.SelectToken("$.data[0].status");
 
                 string path = Path.GetTempPath() + @"\fdgrab_ybcg_pending.txt";
-                if (status.ToString() != "1")
+                if (status.ToString() != "1" || status.ToString() != "2")
                 {
                     Properties.Settings.Default.______pending_bill_no = Properties.Settings.Default.______pending_bill_no.Replace(bill_no + "*|*", "");
                     label1.Text = Properties.Settings.Default.______pending_bill_no;
                     Properties.Settings.Default.Save();
                     
-                    JToken username = __jo.SelectToken("$.data[0].playerid").ToString();
+                    JToken username = _jo.SelectToken("$.data[0].playerid").ToString();
                     string _playerlist_cn = await ___PlayerListContactNumberAsync(username.ToString());
-                    JToken name = __jo.SelectToken("$.data[0].firstname").ToString();
-                    JToken date_deposit = __jo.SelectToken("$.data[0].audittime").ToString();
+                    JToken name = _jo.SelectToken("$.data[0].firstname").ToString();
+                    JToken date_deposit = _jo.SelectToken("$.data[0].audittime").ToString();
                     DateTime date_deposit_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble("1553642608803") / 1000d)).ToLocalTime();
                     if (!String.IsNullOrEmpty(date_deposit.ToString()))
                     {
@@ -1018,11 +1022,11 @@ namespace YBCG_FD_Grab
                     {
                         date_deposit = "";
                     }
-                    JToken process_datetime = __jo.SelectToken("$.data[0].deposittime").ToString();
-                    DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(1553642608803) / 1000d)).ToLocalTime();
+                    JToken process_datetime = _jo.SelectToken("$.data[0].deposittime").ToString();
+                    DateTime process_datetime_replace = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(Convert.ToDouble(process_datetime) / 1000d)).ToLocalTime();
                     process_datetime = process_datetime_replace.ToString("yyyy-MM-dd HH:mm:ss");
-                    JToken vip = __jo.SelectToken("$.data[0].groupname").ToString();
-                    JToken method = __jo.SelectToken("$.data[0].depositpaymenttype").ToString();
+                    JToken vip = _jo.SelectToken("$.data[0].groupname").ToString();
+                    JToken method = _jo.SelectToken("$.data[0].depositpaymenttype").ToString();
                     for (int ii = 0; ii < __deposit_payment_type.Count; ii++)
                     {
                         string[] _deposit_payment_type_replace = __deposit_payment_type[ii].Replace("_", " ").Split('|');
@@ -1046,9 +1050,9 @@ namespace YBCG_FD_Grab
                             }
                         }
                     }
-                    JToken gateway = __jo.SelectToken("$.data[0].thirdpartypaymentstaticname").ToString();
-                    JToken amount = __jo.SelectToken("$.data[0].receiveddepositamt").ToString().Replace(",", "");
-                    JToken pg_bill_no = __jo.SelectToken("$.data[0].remarks").ToString();
+                    JToken gateway = _jo.SelectToken("$.data[0].thirdpartypaymentstaticname").ToString();
+                    JToken amount = _jo.SelectToken("$.data[0].receiveddepositamt").ToString().Replace(",", "");
+                    JToken pg_bill_no = _jo.SelectToken("$.data[0].remarks").ToString();
                     if (status.ToString() == "3")
                     {
                         status = "1";
@@ -1058,6 +1062,9 @@ namespace YBCG_FD_Grab
                         amount = "0";
                         status = "0";
                     }
+
+                    // 04/22/19
+                    SendMyBot(username.ToString() + " --- " + name.ToString() + " --- " + process_datetime.ToString() + " --- " + vip.ToString() + " --- " + amount.ToString() + " --- " + gateway.ToString() + " --- " + status.ToString() + " --- " + bill_no + " --- " + _playerlist_cn_pending + " --- " + date_deposit.ToString() + " --- " + method.ToString() + " --- " + pg_bill_no.ToString());
 
                     if (__last_username_pending == username.ToString())
                     {
