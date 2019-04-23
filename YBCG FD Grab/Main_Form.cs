@@ -40,8 +40,8 @@ namespace YBCG_FD_Grab
         private string __last_username_pending = "";
         private string __url = "";
         private string __auth = "";
-        private string __end_time = "";
-        private string __start_time = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+        private string _end_time = "";
+        private string _start_time = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
         List<string> __deposit_payment_type = new List<string>();
         Form __mainFormHandler;
 
@@ -312,11 +312,11 @@ namespace YBCG_FD_Grab
             __url = e.Address.ToString();
             if (e.Address.ToString().Equals("https://bo.yongbao66.com/login"))
             {
-                if (!String.IsNullOrEmpty(__end_time))
+                if (!String.IsNullOrEmpty(_end_time))
                 {
                     //SendITSupport("BO Back to Normal. Firing up!");
                     SendMyBot("BO Back to Normal. Firing up!");
-                    __end_time = "";
+                    _end_time = "";
                 }
 
                 Invoke(new Action(async () =>
@@ -338,7 +338,7 @@ namespace YBCG_FD_Grab
             {
                 Invoke(new Action(() =>
                 {
-                    __end_time = DateTime.Now.AddMinutes(5).AddSeconds(2).ToString("dd/MM/yyyy HH:mm:ss");
+                    _end_time = DateTime.Now.AddMinutes(5).AddSeconds(2).ToString("dd/MM/yyyy HH:mm:ss");
                     timer_retry.Start();
                     panel_cefsharp.Visible = false;
                     label_brand.Visible = true;
@@ -384,8 +384,8 @@ namespace YBCG_FD_Grab
         {            
             label_retry.Visible = true;
             
-            DateTime end = DateTime.ParseExact(__end_time, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
-            DateTime start = DateTime.ParseExact(__start_time, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+            DateTime end = DateTime.ParseExact(_end_time, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+            DateTime start = DateTime.ParseExact(_start_time, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
 
             TimeSpan difference = end - start;
             int hrs = difference.Hours;
@@ -609,13 +609,13 @@ namespace YBCG_FD_Grab
         {
             try
             {
-                string __start_time_replace = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd 00:00:00");
-                DateTime __start_time = DateTime.ParseExact(__start_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                int __start_time_epoch = (int)(__start_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
+                string _start_time_replace = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd 00:00:00");
+                DateTime _start_time = DateTime.ParseExact(_start_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                int _start_time_epoch = (int)(_start_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
 
-                string __end_time_replace = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
-                DateTime __end_time = DateTime.ParseExact(__end_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                int __end_time_epoch = (int)(__end_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
+                string _end_time_replace = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
+                DateTime _end_time = DateTime.ParseExact(_end_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                int _end_time_epoch = (int)(_end_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
 
                 WebClient wc = new WebClient(); string value = wc.Headers["Authorization"];
                 wc.Encoding = Encoding.UTF8;
@@ -626,7 +626,7 @@ namespace YBCG_FD_Grab
                 wc.Headers[HttpRequestHeader.Authorization] = __auth;
                 wc.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
                 wc.Headers.Add("Content-Type", "application/json");
-                byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/search?endtime=" + __end_time_epoch + "999&language=1&limit=100000&offset=0&sort=DESC&sortcolumn=deposittime&starttime=" + __start_time_epoch + "000&statusall=true");
+                byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/search?endtime=" + _end_time_epoch + "999&language=1&limit=100000&offset=0&sort=DESC&sortcolumn=deposittime&starttime=" + _start_time_epoch + "000&statusall=true");
                 string responsebody = Encoding.UTF8.GetString(result);
                 var deserializeObject = JsonConvert.DeserializeObject(responsebody);
                 __jo = JObject.Parse(deserializeObject.ToString());
@@ -667,7 +667,7 @@ namespace YBCG_FD_Grab
                 if (bill_no.ToString().Trim() != Properties.Settings.Default.______last_bill_no)
                 {
                     JToken status = __jo.SelectToken("$.data[" + i + "].status").ToString();
-                    if (status.ToString() != "1" || status.ToString() != "2")
+                    if (status.ToString() != "1" && status.ToString() != "2")
                     {
                         if (i == 0)
                         {
@@ -725,7 +725,6 @@ namespace YBCG_FD_Grab
                         }
                         else
                         {
-                            amount = "0";
                             status = "0";
                         }
 
@@ -733,10 +732,10 @@ namespace YBCG_FD_Grab
                     }
                     else
                     {
-                        if (i == 0)
-                        {
-                            __player_last_bill_no = bill_no.ToString().Trim();
-                        }
+                        //if (i == 0)
+                        //{
+                        //    __player_last_bill_no = bill_no.ToString().Trim();
+                        //}
 
                         JToken username = __jo.SelectToken("$.data[" + i + "].playerid").ToString();
                         string _playerlist_cn = await ___PlayerListContactNumberAsync(username.ToString());
@@ -781,7 +780,7 @@ namespace YBCG_FD_Grab
                             }
                         }
                         JToken gateway = __jo.SelectToken("$.data[" + i + "].thirdpartypaymentstaticname").ToString();
-                        string amount = "0";
+                        JToken amount = __jo.SelectToken("$.data[" + i + "].receiveddepositamt").ToString().Replace(",", "");
                         JToken pg_bill_no = __jo.SelectToken("$.data[" + i + "].remarks").ToString();
                         status = "2";
 
@@ -919,9 +918,16 @@ namespace YBCG_FD_Grab
                                 file.WriteLine(_username + "*|*" + _name + "*|*" + _contact_no + "*|*" + _date_deposit + "*|*" + _vip + "*|*" + _amount + "*|*" + _gateway + "*|*" + _status + "*|*" + _bill_no + "*|*" + _process_datetime + "*|*" + _method + "*|*" + _pg_bill_no);
                                 file.Close();
                             }
-                            
+
                             // 04/22/19
-                            SendMyBot(_username + " --- " + _name + " --- " + _date_deposit + " --- " + _vip + " --- " + _amount + " --- " + _gateway + " --- " + _status + " --- " + _bill_no + " --- " + _contact_no + " --- " + _process_datetime + " --- " + _method + " --- " + _pg_bill_no);
+                            if (_status == "2")
+                            {
+                                SendMyBot("Pending Detected --- " + _username + " --- " + _name + " --- " + _date_deposit + " --- " + _vip + " --- " + _amount + " --- " + _gateway + " --- " + _status + " --- " + _bill_no + " --- " + _contact_no + " --- " + _process_datetime + " --- " + _method + " --- " + _pg_bill_no);
+                            }
+                            else
+                            {
+                                SendMyBot(_username + " --- " + _name + " --- " + _date_deposit + " --- " + _vip + " --- " + _amount + " --- " + _gateway + " --- " + _status + " --- " + _bill_no + " --- " + _contact_no + " --- " + _process_datetime + " --- " + _method + " --- " + _pg_bill_no);
+                            }
 
                             if (__last_username == _username)
                             {
@@ -977,13 +983,13 @@ namespace YBCG_FD_Grab
         {
             try
             {
-                string __start_time_replace = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd 00:00:00");
-                DateTime __start_time = DateTime.ParseExact(__start_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                int __start_time_epoch = (int)(__start_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
+                string _start_time_replace = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd 00:00:00");
+                DateTime _start_time = DateTime.ParseExact(_start_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                int _start_time_epoch = (int)(_start_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
 
-                string __end_time_replace = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
-                DateTime __end_time = DateTime.ParseExact(__end_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                int __end_time_epoch = (int)(__end_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
+                string _end_time_replace = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
+                DateTime _end_time = DateTime.ParseExact(_end_time_replace, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                int _end_time_epoch = (int)(_end_time.AddHours(16) - new DateTime(1970, 1, 1)).TotalSeconds;
 
                 WebClient wc = new WebClient(); string value = wc.Headers["Authorization"];
                 wc.Encoding = Encoding.UTF8;
@@ -995,14 +1001,14 @@ namespace YBCG_FD_Grab
                 wc.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
                 wc.Headers.Add("Content-Type", "application/json");
 
-                byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/search?depositid=" + bill_no + "&endtime=" + __end_time + "&language=1&limit=100000&offset=0&sort=DESC&sortcolumn=deposittime&starttime=" + __start_time + "&statusall=true&timefilter=deposittime");
+                byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/deposits/search?depositid=" + bill_no + "&endtime=" + _end_time_epoch + "999&language=1&limit=25&offset=0&sort=DESC&sortcolumn=deposittime&starttime=" + _start_time_epoch + "000&statusall=true&timefilter=deposittime");
                 string responsebody = Encoding.UTF8.GetString(result);
                 var deserializeObject = JsonConvert.DeserializeObject(responsebody);
                 JToken _jo = JObject.Parse(deserializeObject.ToString());
                 JToken status = _jo.SelectToken("$.data[0].status");
 
                 string path = Path.GetTempPath() + @"\fdgrab_ybcg_pending.txt";
-                if (status.ToString() != "1" || status.ToString() != "2")
+                if (status.ToString() != "1" && status.ToString() != "2")
                 {
                     Properties.Settings.Default.______pending_bill_no = Properties.Settings.Default.______pending_bill_no.Replace(bill_no + "*|*", "");
                     label1.Text = Properties.Settings.Default.______pending_bill_no;
@@ -1059,12 +1065,11 @@ namespace YBCG_FD_Grab
                     }
                     else
                     {
-                        amount = "0";
                         status = "0";
                     }
 
                     // 04/22/19
-                    SendMyBot(username.ToString() + " --- " + name.ToString() + " --- " + process_datetime.ToString() + " --- " + vip.ToString() + " --- " + amount.ToString() + " --- " + gateway.ToString() + " --- " + status.ToString() + " --- " + bill_no + " --- " + _playerlist_cn_pending + " --- " + date_deposit.ToString() + " --- " + method.ToString() + " --- " + pg_bill_no.ToString());
+                    SendMyBot("Send Pending --- " + username.ToString() + " --- " + name.ToString() + " --- " + process_datetime.ToString() + " --- " + vip.ToString() + " --- " + amount.ToString() + " --- " + gateway.ToString() + " --- " + status.ToString() + " --- " + bill_no + " --- " + _playerlist_cn_pending + " --- " + date_deposit.ToString() + " --- " + method.ToString() + " --- " + pg_bill_no.ToString());
 
                     if (__last_username_pending == username.ToString())
                     {
