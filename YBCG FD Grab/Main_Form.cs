@@ -920,14 +920,14 @@ namespace YBCG_FD_Grab
                             }
 
                             // 04/22/19
-                            if (_status == "2")
-                            {
-                                SendMyBot("Pending Detected --- " + _username + " --- " + _name + " --- " + _date_deposit + " --- " + _vip + " --- " + _amount + " --- " + _gateway + " --- " + _status + " --- " + _bill_no + " --- " + _contact_no + " --- " + _process_datetime + " --- " + _method + " --- " + _pg_bill_no);
-                            }
-                            else
-                            {
-                                SendMyBot(_username + " --- " + _name + " --- " + _date_deposit + " --- " + _vip + " --- " + _amount + " --- " + _gateway + " --- " + _status + " --- " + _bill_no + " --- " + _contact_no + " --- " + _process_datetime + " --- " + _method + " --- " + _pg_bill_no);
-                            }
+                            //if (_status == "2")
+                            //{
+                            //    SendMyBot("Pending Detected --- " + _username + " --- " + _name + " --- " + _date_deposit + " --- " + _vip + " --- " + _amount + " --- " + _gateway + " --- " + _status + " --- " + _bill_no + " --- " + _contact_no + " --- " + _process_datetime + " --- " + _method + " --- " + _pg_bill_no);
+                            //}
+                            //else
+                            //{
+                            //    SendMyBot(_username + " --- " + _name + " --- " + _date_deposit + " --- " + _vip + " --- " + _amount + " --- " + _gateway + " --- " + _status + " --- " + _bill_no + " --- " + _contact_no + " --- " + _process_datetime + " --- " + _method + " --- " + _pg_bill_no);
+                            //}
 
                             if (__last_username == _username)
                             {
@@ -1069,7 +1069,7 @@ namespace YBCG_FD_Grab
                     }
 
                     // 04/22/19
-                    SendMyBot("Send Pending --- " + username.ToString() + " --- " + name.ToString() + " --- " + process_datetime.ToString() + " --- " + vip.ToString() + " --- " + amount.ToString() + " --- " + gateway.ToString() + " --- " + status.ToString() + " --- " + bill_no + " --- " + _playerlist_cn_pending + " --- " + date_deposit.ToString() + " --- " + method.ToString() + " --- " + pg_bill_no.ToString());
+                    //SendMyBot("Send Pending --- " + username.ToString() + " --- " + name.ToString() + " --- " + process_datetime.ToString() + " --- " + vip.ToString() + " --- " + amount.ToString() + " --- " + gateway.ToString() + " --- " + status.ToString() + " --- " + bill_no + " --- " + _playerlist_cn_pending + " --- " + date_deposit.ToString() + " --- " + method.ToString() + " --- " + pg_bill_no.ToString());
 
                     if (__last_username_pending == username.ToString())
                     {
