@@ -55,6 +55,7 @@
             this.timer_flush_memory = new System.Windows.Forms.Timer(this.components);
             this.timer_size = new System.Windows.Forms.Timer(this.components);
             this.timer_retry = new System.Windows.Forms.Timer(this.components);
+            this.timer_mb_detect = new System.Windows.Forms.Timer(this.components);
             this.panel_header.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_header)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_minimize)).BeginInit();
@@ -308,6 +309,12 @@
             this.timer_retry.Interval = 1000;
             this.timer_retry.Tick += new System.EventHandler(this.timer_retry_Tick);
             // 
+            // timer_mb_detect
+            // 
+            this.timer_mb_detect.Enabled = true;
+            this.timer_mb_detect.Interval = 5000;
+            this.timer_mb_detect.Tick += new System.EventHandler(this.timer_mb_detect_Tick);
+            // 
             // Main_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -372,5 +379,6 @@
         private System.Windows.Forms.Timer timer_size;
         private System.Windows.Forms.Timer timer_retry;
         private System.Windows.Forms.Label label_retry;
+        private System.Windows.Forms.Timer timer_mb_detect;
     }
 }

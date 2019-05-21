@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace YBCG_FD_Grab
 {
@@ -42,7 +43,10 @@ namespace YBCG_FD_Grab
         private string __auth = "";
         private string _end_time = "";
         private string _start_time = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+        private string __file_name = "";
+        private string __task_id = "";
         List<string> __deposit_payment_type = new List<string>();
+        StringBuilder __DATA_MAB = new StringBuilder();
         Form __mainFormHandler;
 
         // Drag Header to Move
@@ -310,6 +314,7 @@ namespace YBCG_FD_Grab
         private void ChromiumBrowserAddressChanged(object sender, AddressChangedEventArgs e)
         {
             __url = e.Address.ToString();
+
             if (e.Address.ToString().Equals("https://bo.yongbao66.com/login"))
             {
                 if (!String.IsNullOrEmpty(_end_time))
@@ -1672,6 +1677,497 @@ namespace YBCG_FD_Grab
         {
             __mainFormHandler = Application.OpenForms[0];
             __mainFormHandler.Size = new Size(466, 168);
+        }
+
+        private void timer_mb_detect_Tick(object sender, EventArgs e)
+        {
+            ___GetTaskStatus();
+        }
+
+        private void ___GetTaskStatus()
+        {
+            try
+            {
+                timer_mb_detect.Stop();
+                string password = __brand_code + "youdieidie";
+                byte[] encodedPassword = new UTF8Encoding().GetBytes(password);
+                byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
+                string token = BitConverter.ToString(hash)
+                   .Replace("-", string.Empty)
+                   .ToLower();
+
+                using (var wb = new WebClient())
+                {
+                    var data = new NameValueCollection
+                    {
+                        ["brand_code"] = __brand_code,
+                        ["token"] = token
+                    };
+
+                    var response = wb.UploadValues("http://192.168.10.252:8080/API/getBalanceTaskStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
+                    var deserializeObject = JsonConvert.DeserializeObject(responseInString);
+                    JObject jo_mb = JObject.Parse(deserializeObject.ToString());
+                    JToken status = jo_mb.SelectToken("$.status");
+                    JToken task_id = jo_mb.SelectToken("$.task_id");
+                    __task_id = task_id.ToString();
+                    
+                    if (status.ToString() == "1")
+                    {
+                        // start
+                        timer_mb_detect.Stop();
+                        __UpdateTaskStatus();
+                        __GetMABListsAsync();
+                    }
+                    else
+                    {
+                        timer_mb_detect.Start();
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                if (__isLogin)
+                {
+                    __send++;
+                    if (__send == 5)
+                    {
+                        SendITSupport("There's a problem to the server, please re-open the application.");
+                        SendMyBot(err.ToString());
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___WaitNSeconds(10);
+                        ___GetTaskStatus2();
+                    }
+                }
+            }
+        }
+
+        private void ___GetTaskStatus2()
+        {
+            try
+            {
+                timer_mb_detect.Stop();
+                string password = __brand_code + "youdieidie";
+                byte[] encodedPassword = new UTF8Encoding().GetBytes(password);
+                byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
+                string token = BitConverter.ToString(hash)
+                   .Replace("-", string.Empty)
+                   .ToLower();
+
+                using (var wb = new WebClient())
+                {
+                    var data = new NameValueCollection
+                    {
+                        ["brand_code"] = __brand_code,
+                        ["token"] = token
+                    };
+
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/getBalanceTaskStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
+                    var deserializeObject = JsonConvert.DeserializeObject(responseInString);
+                    JObject jo_mb = JObject.Parse(deserializeObject.ToString());
+                    JToken status = jo_mb.SelectToken("$.status");
+                    JToken task_id = jo_mb.SelectToken("$.task_id");
+                    __task_id = task_id.ToString();
+
+                    if (status.ToString() == "1")
+                    {
+                        // start
+                        timer_mb_detect.Stop();
+                        __UpdateTaskStatus();
+                        __GetMABListsAsync();
+                    }
+                    else
+                    {
+                        timer_mb_detect.Start();
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                if (__isLogin)
+                {
+                    __send++;
+                    if (__send == 5)
+                    {
+                        SendITSupport("There's a problem to the server, please re-open the application.");
+                        SendMyBot(err.ToString());
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___WaitNSeconds(10);
+                        ___GetTaskStatus();
+                    }
+                }
+            }
+        }
+
+        private void __UpdateTaskStatus()
+        {
+            try
+            {
+                string password = __brand_code + __task_id + "youdieidie";
+                byte[] encodedPassword = new UTF8Encoding().GetBytes(password);
+                byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
+                string token = BitConverter.ToString(hash)
+                   .Replace("-", string.Empty)
+                   .ToLower();
+
+                using (var wb = new WebClient())
+                {
+                    var data = new NameValueCollection
+                    {
+                        ["brand_code"] = __brand_code,
+                        ["task_id"] = __task_id,
+                        ["token"] = token
+                    };
+
+                    var response = wb.UploadValues("http://192.168.10.252:8080/API/updBalanceTaskStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
+                }
+            }
+            catch (Exception err)
+            {
+                if (__isLogin)
+                {
+                    __send++;
+                    if (__send == 5)
+                    {
+                        SendITSupport("There's a problem to the server, please re-open the application.");
+                        SendMyBot(err.ToString());
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___WaitNSeconds(10);
+                        __UpdateTaskStatus2();
+                    }
+                }
+            }
+        }
+
+        private void __UpdateTaskStatus2()
+        {
+            try
+            {
+                string password = __brand_code + __task_id + "youdieidie";
+                byte[] encodedPassword = new UTF8Encoding().GetBytes(password);
+                byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
+                string token = BitConverter.ToString(hash)
+                   .Replace("-", string.Empty)
+                   .ToLower();
+
+                using (var wb = new WebClient())
+                {
+                    var data = new NameValueCollection
+                    {
+                        ["brand_code"] = __brand_code,
+                        ["task_id"] = __task_id,
+                        ["token"] = token
+                    };
+
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/updBalanceTaskStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
+                }
+            }
+            catch (Exception err)
+            {
+                if (__isLogin)
+                {
+                    __send++;
+                    if (__send == 5)
+                    {
+                        SendITSupport("There's a problem to the server, please re-open the application.");
+                        SendMyBot(err.ToString());
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___WaitNSeconds(10);
+                        __UpdateTaskStatus();
+                    }
+                }
+            }
+        }
+
+        private async void __GetMABListsAsync()
+        {
+            try
+            {
+                WebClient wc = new WebClient(); string value = wc.Headers["Authorization"];
+                wc.Encoding = Encoding.UTF8;
+                wc.UseDefaultCredentials = false;
+                wc.Headers.Add("Accept-Language", "en-US,en;q=0.9");
+                wc.Headers.Add("Referer", "https://bo.yongbao66.com/deposit");
+                wc.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36");
+                wc.Headers[HttpRequestHeader.Authorization] = __auth;
+                wc.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+                wc.Headers.Add("Content-Type", "application/json");
+
+                byte[] result = await wc.DownloadDataTaskAsync("https://boapi.yongbao66.com/yongbao-ims/api/v1/players/list/search?language=1&limit=100000&offset=0&sort=ASC&sortcolumn=playerid");
+                string responsebody = Encoding.UTF8.GetString(result);
+                var deserializeObject = JsonConvert.DeserializeObject(responsebody);
+                JToken _jo_mab = JObject.Parse(deserializeObject.ToString());
+                JToken _count = _jo_mab.SelectToken("$.data").Count();
+
+                label_page_count.Text = "1 of 1";
+                label_currentrecord.Text = "0 of " + Convert.ToInt32(_count).ToString("N0");
+
+                int count = 1;
+
+                for (int i = 0; i < Convert.ToInt32(_count); i++)
+                {
+                    Application.DoEvents();
+                                        
+                    JToken username = _jo_mab.SelectToken("$.data[" + i + "].playerid").ToString();
+                    JToken mab = _jo_mab.SelectToken("$.data[" + i + "].totalavailable").ToString();
+
+                    if (count == 1)
+                    {
+                        var header = string.Format("{0},{1},{2}", "Brand", "Username", "Main Account Balance");
+                        __DATA_MAB.AppendLine(header);
+                    }
+
+                    var newLine = string.Format("{0},{1},{2}", __brand_code, "\"" + username + "\"", "\"" + mab + "\"");
+                    __DATA_MAB.AppendLine(newLine);
+
+                    label_currentrecord.Text = (count).ToString("N0") + " of " + Convert.ToInt32(_count).ToString("N0");
+                    label_currentrecord.Invalidate();
+                    label_currentrecord.Update();
+
+                    count++;
+                }
+
+                ___Excel_MAB();
+            }
+            catch (Exception err)
+            {
+                __send++;
+                if (__send == 5)
+                {
+                    SendITSupport("There's a problem to the server, please re-open the application.");
+                    SendMyBot(err.ToString());
+
+                    __isClose = false;
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    ___WaitNSeconds(10);
+                    ___GetTaskStatus();
+                }
+            }
+        }
+
+        private void ___Excel_MAB()
+        {
+            try
+            {
+                string _path = "\\\\192.168.10.252\\Balance$\\";
+                string _current_datetime = DateTime.Now.ToString("yyyy-MM-ddHHmm");
+                __file_name = __brand_code + "_" + _current_datetime;
+                string _folder_path_result = _path + __brand_code + "_" + _current_datetime + ".txt";
+                string _folder_path_result_xlsx = _path + __brand_code + "_" + _current_datetime + ".xlsx";
+
+                if (File.Exists(_folder_path_result))
+                {
+                    File.Delete(_folder_path_result);
+                }
+
+                if (File.Exists(_folder_path_result_xlsx))
+                {
+                    File.Delete(_folder_path_result_xlsx);
+                }
+
+                __DATA_MAB.ToString().Reverse();
+                File.WriteAllText(_folder_path_result, __DATA_MAB.ToString(), Encoding.UTF8);
+
+                Excel.Application app = new Excel.Application();
+                Excel.Workbook wb = app.Workbooks.Open(_folder_path_result, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
+                Excel.Worksheet worksheet = wb.ActiveSheet;
+                worksheet.Activate();
+                worksheet.Application.ActiveWindow.SplitRow = 1;
+                worksheet.Application.ActiveWindow.FreezePanes = true;
+                Excel.Range firstRow = (Excel.Range)worksheet.Rows[1];
+                firstRow.AutoFilter(1,
+                                    Type.Missing,
+                                    Excel.XlAutoFilterOperator.xlAnd,
+                                    Type.Missing,
+                                    true);
+                Excel.Range usedRange = worksheet.UsedRange;
+                Excel.Range rows = usedRange.Rows;
+                int count = 0;
+                foreach (Excel.Range row in rows)
+                {
+                    if (count == 0)
+                    {
+                        Excel.Range firstCell = row.Cells[1];
+
+                        string firstCellValue = firstCell.Value as String;
+
+                        if (!string.IsNullOrEmpty(firstCellValue))
+                        {
+                            row.Interior.Color = Color.FromArgb(236, 101, 6);
+                            row.Font.Color = Color.FromArgb(255, 255, 255);
+                        }
+
+                        break;
+                    }
+
+                    count++;
+                }
+                int i;
+                for (i = 1; i <= 3; i++)
+                {
+                    worksheet.Columns[i].ColumnWidth = 22;
+                }
+                wb.SaveAs(_folder_path_result_xlsx, Excel.XlFileFormat.xlOpenXMLWorkbook, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Excel.XlSaveAsAccessMode.xlExclusive, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
+                wb.Close();
+                app.Quit();
+                Marshal.ReleaseComObject(app);
+
+                if (File.Exists(_folder_path_result))
+                {
+                    File.Delete(_folder_path_result);
+                }
+
+                __DATA_MAB.Clear();
+                label_currentrecord.Text = "";
+                label_page_count.Text = "";
+
+                // send
+                ___SetTaskStatus(__task_id, __file_name);
+            }
+            catch (Exception err)
+            {
+                __send++;
+                if (__send == 5)
+                {
+                    SendITSupport("There's a problem to the server, please re-open the application.");
+                    SendMyBot(err.ToString());
+
+                    __isClose = false;
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    ___WaitNSeconds(10);
+                    ___GetTaskStatus();
+                }
+            }
+        }
+
+        private void ___SetTaskStatus(string task_id, string file_name)
+        {
+            try
+            {
+                string password = file_name + task_id + "youdieidie";
+                byte[] encodedPassword = new UTF8Encoding().GetBytes(password);
+                byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
+                string token = BitConverter.ToString(hash)
+                   .Replace("-", string.Empty)
+                   .ToLower();
+
+                using (var wb = new WebClient())
+                {
+                    var data = new NameValueCollection
+                    {
+                        ["brand_code"] = __brand_code,
+                        ["task_id"] = task_id,
+                        ["filename"] = file_name,
+                        ["token"] = token
+                    };
+
+                    var response = wb.UploadValues("http://192.168.10.252:8080/API/setBalanceTaskStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
+
+                    __file_name = "";
+                    __task_id = "";
+                    timer_mb_detect.Start();
+                }
+            }
+            catch (Exception err)
+            {
+                if (__isLogin)
+                {
+                    __send++;
+                    if (__send == 5)
+                    {
+                        SendITSupport("There's a problem to the server, please re-open the application.");
+                        SendMyBot(err.ToString());
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___WaitNSeconds(10);
+                        ___SetTaskStatus2(task_id, file_name);
+                    }
+                }
+            }
+        }
+
+        private void ___SetTaskStatus2(string task_id, string file_name)
+        {
+            try
+            {
+                string password = file_name + task_id + "youdieidie";
+                byte[] encodedPassword = new UTF8Encoding().GetBytes(password);
+                byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
+                string token = BitConverter.ToString(hash)
+                   .Replace("-", string.Empty)
+                   .ToLower();
+
+                using (var wb = new WebClient())
+                {
+                    var data = new NameValueCollection
+                    {
+                        ["task_id"] = task_id,
+                        ["filename"] = file_name,
+                        ["token"] = token
+                    };
+
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/setBalanceTaskStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
+
+                    __file_name = "";
+                    __task_id = "";
+                    timer_mb_detect.Start();
+                }
+            }
+            catch (Exception err)
+            {
+                if (__isLogin)
+                {
+                    __send++;
+                    if (__send == 5)
+                    {
+                        SendITSupport("There's a problem to the server, please re-open the application.");
+                        SendMyBot(err.ToString());
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___WaitNSeconds(10);
+                        ___SetTaskStatus(task_id, file_name);
+                    }
+                }
+            }
         }
     }
 }
