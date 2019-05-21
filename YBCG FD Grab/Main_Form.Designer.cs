@@ -244,6 +244,7 @@
             this.label_page_count.Size = new System.Drawing.Size(203, 23);
             this.label_page_count.TabIndex = 10;
             this.label_page_count.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label_page_count.MouseDown += new System.Windows.Forms.MouseEventHandler(this.label_page_count_MouseDown);
             // 
             // label_currentrecord
             // 
@@ -253,6 +254,7 @@
             this.label_currentrecord.Size = new System.Drawing.Size(203, 23);
             this.label_currentrecord.TabIndex = 11;
             this.label_currentrecord.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label_currentrecord.MouseDown += new System.Windows.Forms.MouseEventHandler(this.label_currentrecord_MouseDown);
             // 
             // pictureBox_loader
             // 
