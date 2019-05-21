@@ -45,7 +45,7 @@
             this.panel_landing = new System.Windows.Forms.Panel();
             this.pictureBox_landing = new System.Windows.Forms.PictureBox();
             this.label_page_count = new System.Windows.Forms.Label();
-            this.label_currentrecord = new System.Windows.Forms.Label();
+            this.label_current_record = new System.Windows.Forms.Label();
             this.pictureBox_loader = new System.Windows.Forms.PictureBox();
             this.timer_landing = new System.Windows.Forms.Timer(this.components);
             this.timer_close_message_box = new System.Windows.Forms.Timer(this.components);
@@ -246,15 +246,15 @@
             this.label_page_count.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label_page_count.MouseDown += new System.Windows.Forms.MouseEventHandler(this.label_page_count_MouseDown);
             // 
-            // label_currentrecord
+            // label_current_record
             // 
-            this.label_currentrecord.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label_currentrecord.Location = new System.Drawing.Point(11, 290);
-            this.label_currentrecord.Name = "label_currentrecord";
-            this.label_currentrecord.Size = new System.Drawing.Size(203, 23);
-            this.label_currentrecord.TabIndex = 11;
-            this.label_currentrecord.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.label_currentrecord.MouseDown += new System.Windows.Forms.MouseEventHandler(this.label_currentrecord_MouseDown);
+            this.label_current_record.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label_current_record.Location = new System.Drawing.Point(11, 290);
+            this.label_current_record.Name = "label_current_record";
+            this.label_current_record.Size = new System.Drawing.Size(203, 23);
+            this.label_current_record.TabIndex = 11;
+            this.label_current_record.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label_current_record.MouseDown += new System.Windows.Forms.MouseEventHandler(this.label_currentrecord_MouseDown);
             // 
             // pictureBox_loader
             // 
@@ -330,7 +330,7 @@
             this.Controls.Add(this.label_brand);
             this.Controls.Add(this.pictureBox_loader);
             this.Controls.Add(this.label_page_count);
-            this.Controls.Add(this.label_currentrecord);
+            this.Controls.Add(this.label_current_record);
             this.Controls.Add(this.panel_header);
             this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -369,7 +369,7 @@
         private System.Windows.Forms.Panel panel_landing;
         private System.Windows.Forms.PictureBox pictureBox_landing;
         private System.Windows.Forms.Label label_page_count;
-        private System.Windows.Forms.Label label_currentrecord;
+        private System.Windows.Forms.Label label_current_record;
         private System.Windows.Forms.PictureBox pictureBox_header;
         private System.Windows.Forms.Timer timer_landing;
         private System.Windows.Forms.Timer timer_close_message_box;

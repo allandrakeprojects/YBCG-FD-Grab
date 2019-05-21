@@ -1940,7 +1940,7 @@ namespace YBCG_FD_Grab
                 JToken _count = _jo_mab.SelectToken("$.data").Count();
 
                 label_page_count.Text = "1 of 1";
-                label_currentrecord.Text = "0 of " + Convert.ToInt32(_count).ToString("N0");
+                label_current_record.Text = "0 of " + Convert.ToInt32(_count).ToString("N0");
 
                 int count = 1;
 
@@ -1960,9 +1960,9 @@ namespace YBCG_FD_Grab
                     var newLine = string.Format("{0},{1},{2}", __brand_code, "\"" + username + "\"", "\"" + mab + "\"");
                     __DATA_MAB.AppendLine(newLine);
 
-                    label_currentrecord.Text = (count).ToString("N0") + " of " + Convert.ToInt32(_count).ToString("N0");
-                    label_currentrecord.Invalidate();
-                    label_currentrecord.Update();
+                    label_current_record.Text = (count).ToString("N0") + " of " + Convert.ToInt32(_count).ToString("N0");
+                    label_current_record.Invalidate();
+                    label_current_record.Update();
 
                     count++;
                 }
@@ -2061,7 +2061,7 @@ namespace YBCG_FD_Grab
                 }
 
                 __DATA_MAB.Clear();
-                label_currentrecord.Text = "";
+                label_current_record.Text = "";
                 label_page_count.Text = "";
 
                 // send
